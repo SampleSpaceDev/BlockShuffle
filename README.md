@@ -19,4 +19,4 @@ The list of blocks that the game uses are found in `blocks.yml`. This can be mod
 ### The Game
 Players' blocks are displayed on the scoreboard, along with whether they have found it, and the time remaining.
 
-![img.png](img.png)
+![Example Scoreboard](https://imgur.com/WB63BtW)
