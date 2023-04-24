@@ -5,6 +5,7 @@ import dev.jorel.commandapi.CommandPermission;
 import dev.jorel.commandapi.arguments.PlayerArgument;
 import dev.samplespace.blockshuffle.BlockShuffle;
 import dev.samplespace.blockshuffle.game.BlockShuffleGame;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -36,6 +37,8 @@ public class BlockShuffleCommands {
                     sender.sendMessage(player.displayName().color(NamedTextColor.AQUA)
                             .append(Component.text(" was added to the game.").color(NamedTextColor.GREEN))
                     );
+                    Audience.audience(game.getPlayers().stream().map(Bukkit::getPlayer).toList())
+                            .sendMessage(player.displayName().color(NamedTextColor.AQUA).append(Component.text(" joined the game!").color(NamedTextColor.YELLOW)));
                 } else {
                     sender.sendMessage(player.displayName().color(NamedTextColor.AQUA)
                             .append(Component.text(" is already in the game.").color(NamedTextColor.RED)));
@@ -51,12 +54,12 @@ public class BlockShuffleCommands {
                 }
 
                 if (game.getPlayers().add(sender.getUniqueId())) {
-                    sender.sendMessage(sender.displayName().color(NamedTextColor.AQUA)
-                            .append(Component.text("You joined the game!").color(NamedTextColor.GREEN))
-                    );
+                    sender.sendMessage(Component.text("You joined the game!").color(NamedTextColor.GREEN));
+
+                    Audience.audience(game.getPlayers().stream().map(Bukkit::getPlayer).toList())
+                            .sendMessage(sender.displayName().color(NamedTextColor.AQUA).append(Component.text(" joined the game!").color(NamedTextColor.YELLOW)));
                 } else {
-                    sender.sendMessage(sender.displayName().color(NamedTextColor.AQUA)
-                            .append(Component.text("You are already in the game!").color(NamedTextColor.RED)));
+                    sender.sendMessage(Component.text("You are already in the game!").color(NamedTextColor.RED));
                 }
             });
 
@@ -80,6 +83,8 @@ public class BlockShuffleCommands {
                     sender.sendMessage(player.displayName().color(NamedTextColor.AQUA)
                             .append(Component.text(" was removed from the game.").color(NamedTextColor.GREEN))
                     );
+                    Audience.audience(game.getPlayers().stream().map(Bukkit::getPlayer).toList())
+                            .sendMessage(player.displayName().color(NamedTextColor.AQUA).append(Component.text(" left the game.").color(NamedTextColor.YELLOW)));
                 } else {
                     sender.sendMessage(player.displayName().color(NamedTextColor.AQUA)
                             .append(Component.text(" is not in the game.").color(NamedTextColor.RED)));
@@ -95,12 +100,11 @@ public class BlockShuffleCommands {
                 }
 
                 if (game.getPlayers().remove(sender.getUniqueId())) {
-                    sender.sendMessage(sender.displayName().color(NamedTextColor.AQUA)
-                            .append(Component.text("You left the game!").color(NamedTextColor.GREEN))
-                    );
+                    sender.sendMessage(Component.text("You left the game!").color(NamedTextColor.GREEN));
+                    Audience.audience(game.getPlayers().stream().map(Bukkit::getPlayer).toList())
+                            .sendMessage(sender.displayName().color(NamedTextColor.AQUA).append(Component.text(" joined the game!").color(NamedTextColor.YELLOW)));
                 } else {
-                    sender.sendMessage(sender.displayName().color(NamedTextColor.AQUA)
-                            .append(Component.text("You are not in the game!").color(NamedTextColor.RED)));
+                    sender.sendMessage(Component.text("You are not in the game!").color(NamedTextColor.RED));
                 }
             });
 
