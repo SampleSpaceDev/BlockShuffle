@@ -1,0 +1,4 @@
+name: BlockShuffle
+version: '${project.version}'
+main: dev.samplespace.blockshuffle.BlockShuffle
+api-version: 1.19
