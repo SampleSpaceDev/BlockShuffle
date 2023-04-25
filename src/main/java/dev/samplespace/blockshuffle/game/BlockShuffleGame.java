@@ -1,8 +1,6 @@
 package dev.samplespace.blockshuffle.game;
 
-import com.google.common.collect.Sets;
 import dev.samplespace.blockshuffle.BlockShuffle;
-import dev.samplespace.blockshuffle.Locale;
 import fr.mrmicky.fastboard.adventure.FastBoard;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
@@ -10,7 +8,6 @@ import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -116,6 +113,7 @@ public class BlockShuffleGame implements ForwardingAudience {
                         BlockShuffleGame.this.stop();
                         return;
                     }
+
                     failedPlayers.forEach(BlockShuffleGame.this.players::remove);
 
                     // If at least one person failed
@@ -128,7 +126,6 @@ public class BlockShuffleGame implements ForwardingAudience {
 
                         BlockShuffleGame.this.sendMessage(Component.text(players + " failed to find their block! They have been eliminated.")
                                 .color(NamedTextColor.RED));
-
                     }
 
                     // If there is one player remaining
@@ -223,11 +220,6 @@ public class BlockShuffleGame implements ForwardingAudience {
         return this.players;
     }
 
-    @Override
-    public @NotNull Iterable<? extends Audience> audiences() {
-        return this.players.stream().map(PlayerState::asPlayer).filter(Objects::nonNull).toList();
-    }
-
     public @Nullable PlayerState getPlayerState(Player player) {
         for (PlayerState state : this.players) {
             if (state.getUniqueId().equals(player.getUniqueId())) {
@@ -235,5 +227,10 @@ public class BlockShuffleGame implements ForwardingAudience {
             }
         }
         return null;
+    }
+
+    @Override
+    public @NotNull Iterable<? extends Audience> audiences() {
+        return this.players.stream().map(PlayerState::asPlayer).filter(Objects::nonNull).toList();
     }
 }
