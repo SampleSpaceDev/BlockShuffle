@@ -27,6 +27,7 @@ public final class BlockShuffle extends JavaPlugin {
         this.getServer().getPluginManager().registerEvents(new BlockShuffleEvents(), this);
 
         new CommandAPICommand("blockshuffle")
+                .withAliases("bs")
                 .withSubcommand(BlockShuffleCommands.ADD_COMMAND)
                 .withSubcommand(BlockShuffleCommands.JOIN_COMMAND)
                 .withSubcommand(BlockShuffleCommands.REMOVE_COMMAND)
@@ -35,7 +36,6 @@ public final class BlockShuffle extends JavaPlugin {
                 .withSubcommand(BlockShuffleCommands.START_COMMAND)
                 .withSubcommand(BlockShuffleCommands.STOP_COMMAND)
                 .withSubcommand(BlockShuffleCommands.SKIP_COMMAND)
-                .withAliases("bs")
                 .register();
     }
 
