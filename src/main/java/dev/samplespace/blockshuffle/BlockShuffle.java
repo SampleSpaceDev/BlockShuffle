@@ -8,10 +8,6 @@ import dev.samplespace.blockshuffle.game.BlockShuffleGame;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
-
 public final class BlockShuffle extends JavaPlugin {
 
     private static BlockShuffle instance;
