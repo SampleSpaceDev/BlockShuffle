@@ -5,15 +5,13 @@ import dev.jorel.commandapi.CommandPermission;
 import dev.jorel.commandapi.arguments.PlayerArgument;
 import dev.samplespace.blockshuffle.BlockShuffle;
 import dev.samplespace.blockshuffle.game.BlockShuffleGame;
-import net.kyori.adventure.audience.Audience;
+import dev.samplespace.blockshuffle.game.PlayerState;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.Objects;
-import java.util.UUID;
 
 public class BlockShuffleCommands {
 
@@ -27,18 +25,13 @@ public class BlockShuffleCommands {
                     return;
                 }
 
-                BlockShuffleGame game = BlockShuffle.get().getGame().orElse(null);
-                if (game == null) {
-                    sender.sendMessage(Component.text("Something went wrong adding that player!").color(NamedTextColor.RED));
-                    return;
-                }
+                BlockShuffleGame game = BlockShuffle.get().getGame();
 
-                if (game.getPlayers().add(player.getUniqueId())) {
+                if (game.addPlayer(player)) {
                     sender.sendMessage(player.displayName().color(NamedTextColor.AQUA)
                             .append(Component.text(" was added to the game.").color(NamedTextColor.GREEN))
                     );
-                    Audience.audience(game.getPlayers().stream().map(Bukkit::getPlayer).toList())
-                            .sendMessage(player.displayName().color(NamedTextColor.AQUA).append(Component.text(" joined the game!").color(NamedTextColor.YELLOW)));
+                    game.sendMessage(player.displayName().color(NamedTextColor.AQUA).append(Component.text(" joined the game!").color(NamedTextColor.YELLOW)));
                 } else {
                     sender.sendMessage(player.displayName().color(NamedTextColor.AQUA)
                             .append(Component.text(" is already in the game.").color(NamedTextColor.RED)));
@@ -47,17 +40,11 @@ public class BlockShuffleCommands {
 
     public static final CommandAPICommand JOIN_COMMAND = new CommandAPICommand("join")
             .executesPlayer((sender, args) -> {
-                BlockShuffleGame game = BlockShuffle.get().getGame().orElse(null);
-                if (game == null) {
-                    sender.sendMessage(Component.text("Something went wrong adding you to the game!").color(NamedTextColor.RED));
-                    return;
-                }
+                BlockShuffleGame game = BlockShuffle.get().getGame();
 
-                if (game.getPlayers().add(sender.getUniqueId())) {
+                if (game.addPlayer(sender)) {
                     sender.sendMessage(Component.text("You joined the game!").color(NamedTextColor.GREEN));
-
-                    Audience.audience(game.getPlayers().stream().map(Bukkit::getPlayer).toList())
-                            .sendMessage(sender.displayName().color(NamedTextColor.AQUA).append(Component.text(" joined the game!").color(NamedTextColor.YELLOW)));
+                    game.sendMessage(sender.displayName().color(NamedTextColor.AQUA).append(Component.text(" joined the game!").color(NamedTextColor.YELLOW)));
                 } else {
                     sender.sendMessage(Component.text("You are already in the game!").color(NamedTextColor.RED));
                 }
@@ -73,18 +60,12 @@ public class BlockShuffleCommands {
                     return;
                 }
 
-                BlockShuffleGame game = BlockShuffle.get().getGame().orElse(null);
-                if (game == null) {
-                    sender.sendMessage(Component.text("Something went wrong removing that player!").color(NamedTextColor.RED));
-                    return;
-                }
+                BlockShuffleGame game = BlockShuffle.get().getGame();
 
-                if (game.getPlayers().remove(player.getUniqueId())) {
+                if (game.removePlayer(player)) {
                     sender.sendMessage(player.displayName().color(NamedTextColor.AQUA)
-                            .append(Component.text(" was removed from the game.").color(NamedTextColor.GREEN))
-                    );
-                    Audience.audience(game.getPlayers().stream().map(Bukkit::getPlayer).toList())
-                            .sendMessage(player.displayName().color(NamedTextColor.AQUA).append(Component.text(" left the game.").color(NamedTextColor.YELLOW)));
+                            .append(Component.text(" was removed from the game.").color(NamedTextColor.GREEN)));
+                    game.sendMessage(player.displayName().color(NamedTextColor.AQUA).append(Component.text(" left the game.").color(NamedTextColor.YELLOW)));
                 } else {
                     sender.sendMessage(player.displayName().color(NamedTextColor.AQUA)
                             .append(Component.text(" is not in the game.").color(NamedTextColor.RED)));
@@ -93,16 +74,11 @@ public class BlockShuffleCommands {
 
     public static final CommandAPICommand LEAVE_COMMAND = new CommandAPICommand("leave")
             .executesPlayer((sender, args) -> {
-                BlockShuffleGame game = BlockShuffle.get().getGame().orElse(null);
-                if (game == null) {
-                    sender.sendMessage(Component.text("Something went wrong removing that player!").color(NamedTextColor.RED));
-                    return;
-                }
+                BlockShuffleGame game = BlockShuffle.get().getGame();
 
-                if (game.getPlayers().remove(sender.getUniqueId())) {
+                if (game.removePlayer(sender)) {
                     sender.sendMessage(Component.text("You left the game!").color(NamedTextColor.GREEN));
-                    Audience.audience(game.getPlayers().stream().map(Bukkit::getPlayer).toList())
-                            .sendMessage(sender.displayName().color(NamedTextColor.AQUA).append(Component.text(" joined the game!").color(NamedTextColor.YELLOW)));
+                    game.sendMessage(sender.displayName().color(NamedTextColor.AQUA).append(Component.text(" joined the game!").color(NamedTextColor.YELLOW)));
                 } else {
                     sender.sendMessage(Component.text("You are not in the game!").color(NamedTextColor.RED));
                 }
@@ -110,15 +86,10 @@ public class BlockShuffleCommands {
 
     public static final CommandAPICommand LIST_COMMAND = new CommandAPICommand("list")
             .executes((sender, args) -> {
-                BlockShuffleGame game = BlockShuffle.get().getGame().orElse(null);
-                if (game == null) {
-                    sender.sendMessage(Component.text("Something went wrong!").color(NamedTextColor.RED));
-                    return;
-                }
+                BlockShuffleGame game = BlockShuffle.get().getGame();
 
                 Component playerList = Component.text(String.join(", ", game.getPlayers().stream()
-                        .map(Bukkit::getPlayer)
-                        .filter(Objects::nonNull)
+                        .map(PlayerState::asPlayer).filter(Objects::nonNull)
                         .map(Player::displayName)
                         .map(component -> (TextComponent) component)
                         .map(TextComponent::content)
@@ -130,11 +101,7 @@ public class BlockShuffleCommands {
     public static final CommandAPICommand START_COMMAND = new CommandAPICommand("start")
             .withPermission(CommandPermission.OP)
             .executes((sender, args) -> {
-                BlockShuffleGame game = BlockShuffle.get().getGame().orElse(null);
-                if (game == null) {
-                    sender.sendMessage(Component.text("Something went wrong starting the game!").color(NamedTextColor.RED));
-                    return;
-                }
+                BlockShuffleGame game = BlockShuffle.get().getGame();
 
                 if (game.getPlayers().size() < 2) {
                     sender.sendMessage(Component.text("There are not enough players to start the game!").color(NamedTextColor.RED));
@@ -148,11 +115,7 @@ public class BlockShuffleCommands {
     public static final CommandAPICommand STOP_COMMAND = new CommandAPICommand("stop")
             .withPermission(CommandPermission.OP)
             .executes((sender, args) -> {
-                BlockShuffleGame game = BlockShuffle.get().getGame().orElse(null);
-                if (game == null) {
-                    sender.sendMessage(Component.text("Something went wrong stopping the game!").color(NamedTextColor.RED));
-                    return;
-                }
+                BlockShuffleGame game = BlockShuffle.get().getGame();
 
                 if (game.getPlayers().size() <= 1) {
                     sender.sendMessage(Component.text("There is no game running!").color(NamedTextColor.RED));
@@ -166,14 +129,10 @@ public class BlockShuffleCommands {
     public static final CommandAPICommand SKIP_COMMAND = new CommandAPICommand("skip")
             .withPermission(CommandPermission.OP)
             .executes((sender, args) -> {
-                BlockShuffleGame game = BlockShuffle.get().getGame().orElse(null);
-                if (game == null) {
-                    sender.sendMessage(Component.text("Something went wrong!").color(NamedTextColor.RED));
-                    return;
-                }
+                BlockShuffleGame game = BlockShuffle.get().getGame();
 
-                for (UUID player : game.getPlayers()) {
-                    game.getCompleted().put(player, true);
+                for (PlayerState state : game.getPlayers()) {
+                    state.setCompleted(true);
                 }
             });
 

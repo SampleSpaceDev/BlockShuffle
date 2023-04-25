@@ -6,6 +6,7 @@ import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -18,55 +19,24 @@ import java.util.List;
 
 public class BlockShuffleEvents implements Listener {
 
-    public static final Component DEFAULT_TITLE = Component.text("Block Shuffle").color(NamedTextColor.YELLOW).decorate(TextDecoration.BOLD);
-    public static final List<Component> DEFAULT_LINES = List.of(Component.empty(), Component.text("You are not in a game!").color(NamedTextColor.GRAY), Component.empty());
-
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
-        BlockShuffleGame game = BlockShuffle.get().getGame().orElse(null);
-        if (game == null || game.getCompleted().isEmpty() || game.getBlocks().isEmpty()) {
-            return;
-        }
-        Player player = event.getPlayer();
-
-        boolean completed = game.getCompleted().get(player.getUniqueId());
-        if (completed) {
+        BlockShuffleGame game = BlockShuffle.get().getGame();
+        if (game.getPlayers().isEmpty()) {
             return;
         }
 
-        Material material = game.getBlocks().get(player.getUniqueId());
-        if (event.getTo().clone().subtract(0, 1, 0).getBlock().getType().equals(material)) {
-            game.getCompleted().put(player.getUniqueId(), true);
-            player.sendMessage(Component.text("Well done! You found your block.").color(NamedTextColor.GREEN));
-            player.playSound(Sound.sound(org.bukkit.Sound.ENTITY_EXPERIENCE_ORB_PICKUP.key(), Sound.Source.MASTER, 1.0f, 1.0f));
-        }
-    }
-
-    @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        BlockShuffleGame game = BlockShuffle.get().getGame().orElse(null);
-        if (game == null) {
+        PlayerState state = game.getPlayerState(event.getPlayer());
+        if (state == null || state.isCompleted()) {
             return;
         }
 
-        Player player = event.getPlayer();
-        FastBoard board = new FastBoard(player);
-        game.getScoreboards().put(player.getUniqueId(), board);
-
-        if (!game.getPlayers().contains(player.getUniqueId())) {
-            board.updateTitle(DEFAULT_TITLE);
-            board.updateLines(DEFAULT_LINES);
-        }
-    }
-
-    @EventHandler
-    public void onPlayerQuit(PlayerQuitEvent event) {
-        BlockShuffleGame game = BlockShuffle.get().getGame().orElse(null);
-        if (game == null) {
+        Location to = event.getTo();
+        Location from = event.getFrom();
+        if (to.getBlockX() == from.getBlockX() && to.getBlockY() == from.getBlockY() && to.getBlockZ() == from.getBlockZ()) {
             return;
         }
 
-        Player player = event.getPlayer();
-        game.getScoreboards().remove(player.getUniqueId());
+        game.checkBlock(state, to.clone().subtract(0, 1, 0));
     }
 }

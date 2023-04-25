@@ -6,14 +6,16 @@ import dev.samplespace.blockshuffle.command.BlockShuffleCommands;
 import dev.samplespace.blockshuffle.game.BlockShuffleEvents;
 import dev.samplespace.blockshuffle.game.BlockShuffleGame;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 public final class BlockShuffle extends JavaPlugin {
 
     private static BlockShuffle instance;
-    private final AtomicReference<BlockShuffleGame> game = new AtomicReference<>();
+    private final BlockShuffleGame game = new BlockShuffleGame();
 
     @Override
     public void onEnable() {
@@ -23,7 +25,6 @@ public final class BlockShuffle extends JavaPlugin {
 
         this.saveDefaultConfig();
         this.getServer().getPluginManager().registerEvents(new BlockShuffleEvents(), this);
-        this.setGame(new BlockShuffleGame());
 
         new CommandAPICommand("blockshuffle")
                 .withSubcommand(BlockShuffleCommands.ADD_COMMAND)
@@ -43,12 +44,8 @@ public final class BlockShuffle extends JavaPlugin {
         CommandAPI.onDisable();
     }
 
-    public Optional<BlockShuffleGame> getGame() {
-        return Optional.ofNullable(this.game.get());
-    }
-
-    public void setGame(BlockShuffleGame game) {
-        this.game.set(game);
+    public @NotNull BlockShuffleGame getGame() {
+        return this.game;
     }
 
     public static BlockShuffle get() {
