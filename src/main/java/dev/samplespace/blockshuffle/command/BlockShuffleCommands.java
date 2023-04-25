@@ -20,13 +20,8 @@ public class BlockShuffleCommands {
             .withArguments(new PlayerArgument("player"))
             .executes((sender, args) -> {
                 Player player = (Player) args[0];
-                if (player == null) {
-                    sender.sendMessage(Component.text("That player is not online or does not exist.").color(NamedTextColor.RED));
-                    return;
-                }
 
                 BlockShuffleGame game = BlockShuffle.get().getGame();
-
                 if (game.addPlayer(player)) {
                     sender.sendMessage(player.displayName().color(NamedTextColor.AQUA)
                             .append(Component.text(" was added to the game.").color(NamedTextColor.GREEN))
@@ -55,13 +50,8 @@ public class BlockShuffleCommands {
             .withArguments(new PlayerArgument("player"))
             .executes((sender, args) -> {
                 Player player = (Player) args[0];
-                if (player == null) {
-                    sender.sendMessage(Component.text("That player is not online or does not exist.").color(NamedTextColor.RED));
-                    return;
-                }
 
                 BlockShuffleGame game = BlockShuffle.get().getGame();
-
                 if (game.removePlayer(player)) {
                     sender.sendMessage(player.displayName().color(NamedTextColor.AQUA)
                             .append(Component.text(" was removed from the game.").color(NamedTextColor.GREEN)));
