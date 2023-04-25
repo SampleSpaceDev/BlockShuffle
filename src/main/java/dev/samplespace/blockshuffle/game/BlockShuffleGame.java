@@ -76,13 +76,13 @@ public class BlockShuffleGame implements ForwardingAudience {
         this.game = new BukkitRunnable() {
             @Override
             public void run() {
-                for (PlayerState state : BlockShuffleGame.this.players) {
-                    state.updateBoard(BlockShuffleGame.this.seconds);
-                }
-
                 int completed = 0;
-                for (PlayerState player : BlockShuffleGame.this.players) {
-                    if (player.isCompleted()) {
+                for (PlayerState state : BlockShuffleGame.this.players) {
+                    // Update scoreboards
+                    state.updateBoard(BlockShuffleGame.this.seconds);
+
+                    // Count players who have found their block
+                    if (state.isCompleted()) {
                         completed++;
                     }
                 }
@@ -191,6 +191,7 @@ public class BlockShuffleGame implements ForwardingAudience {
                 return;
             }
 
+            this.sendMessage(player.displayName().color(NamedTextColor.AQUA).append(Component.text(" found their block!").color(NamedTextColor.YELLOW)));
             player.sendMessage(Component.text("Well done! You found your block.").color(NamedTextColor.GREEN));
             player.playSound(Sound.sound(org.bukkit.Sound.ENTITY_EXPERIENCE_ORB_PICKUP.key(), Sound.Source.MASTER, 1.0f, 1.0f));
         }
