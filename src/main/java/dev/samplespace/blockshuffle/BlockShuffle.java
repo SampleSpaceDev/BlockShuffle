@@ -11,13 +11,14 @@ import org.jetbrains.annotations.NotNull;
 public final class BlockShuffle extends JavaPlugin {
 
     private static BlockShuffle instance;
-    private final BlockShuffleGame game = new BlockShuffleGame();
+    private BlockShuffleGame game;
 
     @Override
     public void onEnable() {
         CommandAPI.onEnable(this);
 
         instance = this;
+        this.game = new BlockShuffleGame();
 
         this.saveDefaultConfig();
         this.getServer().getPluginManager().registerEvents(new BlockShuffleEvents(), this);
